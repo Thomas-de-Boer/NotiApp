@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Gezinsbel</string>
+
+    <!-- Eerste start -->
+    <string name="setup_title">Welkom bij Gezinsbel 🔔</string>
+    <string name="setup_intro">Met één druk op de knop stuur je een bericht naar het hele gezin. Reageert iemand niet, dan gaat zijn of haar telefoon bellen.</string>
+    <string name="setup_name_label">Jouw naam</string>
+    <string name="setup_permissions_title">Toestemmingen</string>
+    <string name="perm_notifications">Meldingen</string>
+    <string name="perm_notifications_why">Om berichten van het gezin te kunnen tonen.</string>
+    <string name="perm_fullscreen">Volledig scherm</string>
+    <string name="perm_fullscreen_why">Om als een inkomend gesprek op het vergrendelscherm te bellen.</string>
+    <string name="perm_battery">Batterij niet beperken</string>
+    <string name="perm_battery_why">Zodat de telefoon berichten ook ontvangt als hij lang niet gebruikt is.</string>
+    <string name="perm_grant">Toestaan</string>
+    <string name="setup_done">Klaar</string>
+    <string name="setup_permissions_warning">Zonder alle toestemmingen kan het zijn dat je berichten mist of dat de telefoon niet belt.</string>
 </resources>
