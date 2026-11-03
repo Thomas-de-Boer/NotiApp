@@ -108,8 +108,20 @@ private enum class Screen { HOME, SETTINGS, PERMISSIONS }
 @Composable
 fun GezinsbelTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) darkColorScheme(primary = Color(0xFFFFB59A))
-        else lightColorScheme(primary = Color(0xFFE8622A)),
+        colorScheme = if (isSystemInDarkTheme()) {
+            darkColorScheme(
+                primary = Color(0xFFFFB59A),
+                onPrimary = Color(0xFF5A1B00),
+                primaryContainer = Color(0xFF7A2E0B),
+                onPrimaryContainer = Color(0xFFFFDBCE),
+            )
+        } else {
+            lightColorScheme(
+                primary = Color(0xFFE8622A),
+                primaryContainer = Color(0xFFFFDBCE),
+                onPrimaryContainer = Color(0xFF3A0B00),
+            )
+        },
         content = content,
     )
 }
