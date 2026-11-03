@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeout
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.UUID
@@ -81,7 +82,7 @@ class Members(private val context: Context) {
         val last = context.membersStore.data.first()[KEY_LAST_ANNOUNCE] ?: 0
         if (!force && System.currentTimeMillis() - last < INTERVAL_MS) return
         runCatching {
-            val token = FirebaseMessaging.getInstance().token.await()
+            val token = myToken()
             FcmSender.send(context, hello(FamilyMessage.Type.HELLO, me, token))
             context.membersStore.edit { it[KEY_LAST_ANNOUNCE] = System.currentTimeMillis() }
             Log.i(TAG, "Aangemeld bij het gezin als ${me.name}")
@@ -92,7 +93,7 @@ class Members(private val context: Context) {
     suspend fun replyTo(newMemberToken: String) {
         val me = Settings(context).current()
         runCatching {
-            val token = FirebaseMessaging.getInstance().token.await()
+            val token = myToken()
             FcmSender.sendToToken(context, hello(FamilyMessage.Type.HELLO_REPLY, me, token), newMemberToken)
         }.onFailure { Log.w(TAG, "Antwoord op aanmelding mislukt", it) }
     }
@@ -122,6 +123,10 @@ class Members(private val context: Context) {
         }
         context.membersStore.edit { it[KEY_LAST_CHECK] = System.currentTimeMillis() }
     }
+
+    /** Ons eigen FCM-adres. Geeft het op na 30 seconden (bijv. als Google Play-services nog niet klaar is). */
+    private suspend fun myToken(): String =
+        withTimeout(30_000) { FirebaseMessaging.getInstance().token.await() }
 
     private fun hello(type: FamilyMessage.Type, me: AppSettings, token: String) =
         FamilyMessage(type, UUID.randomUUID().toString(), me.senderId, me.name, token = token)
