@@ -46,6 +46,13 @@
     <string name="settings_test_text">Dit is een test 🔔</string>
     <string name="settings_permissions">Toestemmingen controleren</string>
 
+    <!-- Trilpatronen -->
+    <string name="vib_standard">Standaard</string>
+    <string name="vib_double">Snel dubbel (brr brr)</string>
+    <string name="vib_heartbeat">Hartslag</string>
+    <string name="vib_long">Lang en rustig</string>
+    <string name="vib_sos">Morse SOS</string>
+
     <!-- Meldingen -->
     <string name="channel_messages">Gezinsberichten</string>
     <string name="channel_messages_desc">Nieuwe berichten van het gezin</string>

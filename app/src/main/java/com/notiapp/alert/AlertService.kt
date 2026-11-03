@@ -79,13 +79,14 @@ class AlertService : Service() {
     }
 
     /** Niemand heeft gereageerd: gaan bellen. */
-    private fun escalate() {
+    private suspend fun escalate() {
         val alert = _active.value ?: return
         _active.value = alert.copy(ringing = true)
         // Een nieuwe melding (ander id) zodat Android het volledige scherm zeker opent.
         startInForeground(buildNotification(alert.message, ringing = true), Notifications.ID_RING)
         notificationManager().cancel(Notifications.ID_ALERT)
-        ringer.start()
+        val settings = Settings(applicationContext).current()
+        ringer.start(settings.ringtoneUri, settings.vibrationPattern)
     }
 
     private fun acknowledge(alertId: String?) {

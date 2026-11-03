@@ -1,9 +1,11 @@
 package com.notiapp.data
 
 import android.content.Context
+import android.net.Uri
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.notiapp.alert.VibrationPattern
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -16,6 +18,9 @@ data class AppSettings(
     val name: String,
     val senderId: String,
     val presets: List<String>,
+    /** Eigen beltoon, of null = standaard beltoon van de telefoon. */
+    val ringtoneUri: Uri?,
+    val vibrationPattern: VibrationPattern,
 )
 
 class Settings(private val context: Context) {
@@ -40,6 +45,8 @@ class Settings(private val context: Context) {
         private val KEY_NAME = stringPreferencesKey("naam")
         private val KEY_SENDER_ID = stringPreferencesKey("afzender_id")
         private val KEY_PRESETS = stringPreferencesKey("berichten")
+        private val KEY_RINGTONE = stringPreferencesKey("beltoon")
+        private val KEY_VIBRATION = stringPreferencesKey("trilpatroon")
         private const val SEPARATOR = "\u001F"
     }
 
@@ -48,6 +55,8 @@ class Settings(private val context: Context) {
             name = p[KEY_NAME] ?: "",
             senderId = p[KEY_SENDER_ID] ?: "",
             presets = p[KEY_PRESETS]?.split(SEPARATOR)?.filter { it.isNotBlank() } ?: DEFAULT_PRESETS,
+            ringtoneUri = p[KEY_RINGTONE]?.let(Uri::parse),
+            vibrationPattern = VibrationPattern.fromName(p[KEY_VIBRATION]),
         )
     }
 
@@ -69,4 +78,11 @@ class Settings(private val context: Context) {
         context.dataStore.edit { it[KEY_PRESETS] = presets.map { s -> s.trim() }.filter { s -> s.isNotEmpty() }.joinToString(SEPARATOR) }
     }
 
+    suspend fun setRingtone(uri: Uri?) {
+        context.dataStore.edit { if (uri == null) it.remove(KEY_RINGTONE) else it[KEY_RINGTONE] = uri.toString() }
+    }
+
+    suspend fun setVibrationPattern(pattern: VibrationPattern) {
+        context.dataStore.edit { it[KEY_VIBRATION] = pattern.name }
+    }
 }
