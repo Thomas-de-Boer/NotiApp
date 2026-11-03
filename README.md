@@ -72,11 +72,14 @@ APK again, and install it over the old one. Names and settings on the phones are
   personal or group message; only those phones get it. After sending it switches back to "Iedereen".
 - **"Eigen bericht…"** (custom message): the button at the bottom lets you type any message.
 - A message containing `…` (e.g. "We vertrekken naar …") asks you to fill in the rest when sending.
-- **No response?** After 30 seconds the phone rings like a call until someone presses **"OK, gezien"**.
-  - Phone on normal: ringtone and vibration.
-  - Phone on **vibrate or silent: vibration only**.
+- **"Hoe:"** (how): choose how the message arrives. After sending it switches back to "Melding".
+  - **🔔 Melding** (default): a normal notification with sound.
+  - **📞 Bellen**: a notification, and if nobody responds within 30 seconds the phone rings like a call until
+    someone presses **"OK, gezien"**. Phone on normal: ringtone and vibration. Phone on **vibrate or silent:
+    vibration only**.
+  - **🔕 Stil**: no sound or pop-up. The message just sits among the phone's notifications (under "Silent").
 - **"Gezien door …"** (seen by): you can see who has seen your message.
-- **"Stop het bellen bij iedereen"**: stops the ringing on every phone.
+- **"Stop het bellen bij iedereen"** / **"Bericht intrekken"**: stops the ringing, or removes the notification, on every phone.
 - **Geschiedenis** (history, clock icon): all messages you received ("Ontvangen") and sent ("Verstuurd"), with
   whether they were seen, missed ("Gemist") or cancelled. Stored on the phone (last 200).
 - **Instellingen** (settings, gear icon):
