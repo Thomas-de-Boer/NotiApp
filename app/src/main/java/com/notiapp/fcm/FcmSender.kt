@@ -18,7 +18,7 @@ import java.net.URL
  * Gebruikt de serviceaccount-sleutel in assets/fcm_service_account.json (zie README).
  */
 object FcmSender {
-    private const val TAG = "Gezinsbel"
+    private const val TAG = "NotiApp"
     private const val KEY_FILE = "fcm_service_account.json"
     private const val SCOPE = "https://www.googleapis.com/auth/firebase.messaging"
 

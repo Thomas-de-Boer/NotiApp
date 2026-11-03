@@ -37,7 +37,7 @@ class FamilyMessagingService : FirebaseMessagingService() {
     }
 
     companion object {
-        private const val TAG = "Gezinsbel"
+        private const val TAG = "NotiApp"
         private const val MAX_AGE_MS = 15 * 60 * 1000L
     }
 }

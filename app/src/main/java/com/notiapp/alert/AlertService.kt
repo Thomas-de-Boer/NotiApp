@@ -198,7 +198,7 @@ class AlertService : Service() {
         extras?.keySet()?.mapNotNull { key -> getStringExtra(key)?.let { key to it } }?.toMap().orEmpty()
 
     companion object {
-        private const val TAG = "Gezinsbel"
+        private const val TAG = "NotiApp"
         private const val ACTION_ALERT = "com.notiapp.ALERT"
         private const val ACTION_ACK = "com.notiapp.ACK"
         private const val ACTION_CANCEL = "com.notiapp.CANCEL"

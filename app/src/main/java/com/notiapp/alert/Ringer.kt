@@ -23,7 +23,7 @@ class Ringer(private val context: Context) {
     fun start() {
         if (player != null) return
         wakeLock = context.getSystemService(PowerManager::class.java)
-            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Gezinsbel:bellen")
+            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NotiApp:bellen")
             .apply { acquire(11 * 60 * 1000L) }
 
         val uri = RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE)
@@ -42,7 +42,7 @@ class Ringer(private val context: Context) {
                 start()
             }
         } catch (e: Exception) {
-            Log.e("Gezinsbel", "Beltoon afspelen mislukt", e)
+            Log.e("NotiApp", "Beltoon afspelen mislukt", e)
             null
         }
 

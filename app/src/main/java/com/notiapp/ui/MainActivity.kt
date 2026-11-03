@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
         val store = Settings(applicationContext)
         subscribeToFamily()
         setContent {
-            GezinsbelTheme {
+            NotiAppTheme {
                 Surface(Modifier.fillMaxSize()) {
                     val settings by store.settings.collectAsState(initial = null)
                     val scope = rememberCoroutineScope()
@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
     /** Alle telefoons luisteren naar hetzelfde gezinskanaal. */
     private fun subscribeToFamily() {
         if (FirebaseApp.getApps(this).isEmpty()) {
-            Log.w("Gezinsbel", "Firebase is niet ingesteld (google-services.json ontbreekt)")
+            Log.w("NotiApp", "Firebase is niet ingesteld (google-services.json ontbreekt)")
             return
         }
         FirebaseMessaging.getInstance().subscribeToTopic(Settings.TOPIC)
@@ -106,7 +106,7 @@ class MainActivity : ComponentActivity() {
 private enum class Screen { HOME, SETTINGS, PERMISSIONS }
 
 @Composable
-fun GezinsbelTheme(content: @Composable () -> Unit) {
+fun NotiAppTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) {
             darkColorScheme(

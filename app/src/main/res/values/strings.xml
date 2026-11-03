@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Gezinsbel</string>
+    <string name="app_name">Noti App</string>
 
     <!-- Eerste start -->
-    <string name="setup_title">Welkom bij Gezinsbel 🔔</string>
+    <string name="setup_title">Welkom bij Noti App 🔔</string>
     <string name="setup_intro">Met één druk op de knop stuur je een bericht naar het hele gezin. Reageert iemand niet, dan gaat zijn of haar telefoon bellen.</string>
     <string name="setup_name_label">Jouw naam</string>
     <string name="setup_permissions_title">Toestemmingen</string>
