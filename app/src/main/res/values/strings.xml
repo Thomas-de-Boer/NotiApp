@@ -34,8 +34,6 @@
     <string name="settings_title">Instellingen</string>
     <string name="settings_open">Instellingen</string>
     <string name="settings_back">Terug</string>
-    <string name="settings_delay">Bellen na %1$d seconden</string>
-    <string name="settings_delay_hint">Zo lang wacht deze telefoon na een bericht voordat hij gaat bellen. 0 = meteen bellen.</string>
     <string name="settings_presets">Berichten</string>
     <string name="settings_presets_hint">Gebruik … voor een stukje dat je bij het versturen invult, bijv. \"We vertrekken naar …\".</string>
     <string name="settings_up">Omhoog</string>

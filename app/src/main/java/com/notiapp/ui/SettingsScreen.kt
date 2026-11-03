@@ -23,13 +23,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,7 +44,6 @@ import com.notiapp.data.AppSettings
 import com.notiapp.data.Settings
 import com.notiapp.fcm.FamilyMessage
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,13 +51,11 @@ fun SettingsScreen(settings: AppSettings, store: Settings, onOpenPermissions: ()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var name by remember { mutableStateOf(settings.name) }
-    var delay by remember { mutableFloatStateOf(settings.ringDelaySeconds.toFloat()) }
     val presets = remember { mutableStateListOf(*settings.presets.toTypedArray()) }
 
     fun saveAndClose() {
         scope.launch {
             if (name.isNotBlank()) store.setName(name)
-            store.setRingDelay(delay.roundToInt())
             store.setPresets(presets.toList().ifEmpty { Settings.DEFAULT_PRESETS })
             onBack()
         }
@@ -90,11 +85,6 @@ fun SettingsScreen(settings: AppSettings, store: Settings, onOpenPermissions: ()
                     label = { Text(stringResource(R.string.setup_name_label)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
-            }
-            item {
-                Text(stringResource(R.string.settings_delay, delay.roundToInt()), style = MaterialTheme.typography.titleSmall)
-                Slider(value = delay, onValueChange = { delay = (it / 5).roundToInt() * 5f }, valueRange = 0f..120f)
-                Text(stringResource(R.string.settings_delay_hint), style = MaterialTheme.typography.bodySmall)
             }
             item { HorizontalDivider() }
             item {

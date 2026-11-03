@@ -49,7 +49,7 @@ class AlertService : Service() {
         when (intent?.action) {
             ACTION_ALERT -> {
                 val message = FamilyMessage.fromData(intent.extrasToMap()) ?: return stop()
-                val delaySec = intent.getIntExtra(EXTRA_DELAY, Settings.DEFAULT_RING_DELAY)
+                val delaySec = intent.getIntExtra(EXTRA_DELAY, Settings.RING_DELAY_SECONDS)
                 showAlert(message, delaySec, intent.getBooleanExtra(EXTRA_TEST, false))
             }
             ACTION_ACK -> acknowledge(intent.getStringExtra(EXTRA_ALERT_ID))

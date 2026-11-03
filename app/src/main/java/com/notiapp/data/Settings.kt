@@ -2,7 +2,6 @@ package com.notiapp.data
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +16,6 @@ data class AppSettings(
     val name: String,
     val senderId: String,
     val presets: List<String>,
-    val ringDelaySeconds: Int,
 )
 
 class Settings(private val context: Context) {
@@ -33,7 +31,8 @@ class Settings(private val context: Context) {
             "Bel me even 📞",
             "Ik ben thuis 🏠",
         )
-        const val DEFAULT_RING_DELAY = 30
+        /** Zo lang (seconden) wacht een telefoon na een bericht voordat hij gaat bellen. */
+        const val RING_DELAY_SECONDS = 30
 
         /** Een bericht met dit teken vraagt om een aanvulling, bijv. "We vertrekken naar …". */
         const val FILL_IN = "…"
@@ -41,7 +40,6 @@ class Settings(private val context: Context) {
         private val KEY_NAME = stringPreferencesKey("naam")
         private val KEY_SENDER_ID = stringPreferencesKey("afzender_id")
         private val KEY_PRESETS = stringPreferencesKey("berichten")
-        private val KEY_RING_DELAY = intPreferencesKey("belvertraging")
         private const val SEPARATOR = "\u001F"
     }
 
@@ -50,7 +48,6 @@ class Settings(private val context: Context) {
             name = p[KEY_NAME] ?: "",
             senderId = p[KEY_SENDER_ID] ?: "",
             presets = p[KEY_PRESETS]?.split(SEPARATOR)?.filter { it.isNotBlank() } ?: DEFAULT_PRESETS,
-            ringDelaySeconds = p[KEY_RING_DELAY] ?: DEFAULT_RING_DELAY,
         )
     }
 
@@ -72,7 +69,4 @@ class Settings(private val context: Context) {
         context.dataStore.edit { it[KEY_PRESETS] = presets.map { s -> s.trim() }.filter { s -> s.isNotEmpty() }.joinToString(SEPARATOR) }
     }
 
-    suspend fun setRingDelay(seconds: Int) {
-        context.dataStore.edit { it[KEY_RING_DELAY] = seconds.coerceIn(0, 600) }
-    }
 }

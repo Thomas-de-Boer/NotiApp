@@ -25,7 +25,7 @@ class FamilyMessagingService : FirebaseMessagingService() {
                     Log.i(TAG, "Oud bericht genegeerd (${ageMs / 1000}s)")
                     return
                 }
-                AlertService.startAlert(applicationContext, message, me.ringDelaySeconds)
+                AlertService.startAlert(applicationContext, message, Settings.RING_DELAY_SECONDS)
             }
             FamilyMessage.Type.ACK ->
                 if (message.originalSenderId == me.senderId) SentAlerts.onSeen(applicationContext, message)
