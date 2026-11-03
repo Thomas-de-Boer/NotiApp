@@ -1,0 +1,17 @@
+*.iml
+.gradle
+local.properties
+/.idea
+.DS_Store
+/build
+/app/build
+/captures
+.externalNativeBuild
+.cxx
+*.apk
+*.aab
+.kotlin
+
+# Geheime Firebase-bestanden: NOOIT committen
+app/google-services.json
+app/src/main/assets/fcm_service_account.json
