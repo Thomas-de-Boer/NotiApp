@@ -13,6 +13,8 @@ object Notifications {
     const val CHANNEL_RINGING = "bellen"
     /** Rustige meldingen, zoals "Mama heeft je bericht gezien". */
     const val CHANNEL_STATUS = "status"
+    /** Stille berichten: geen geluid, alleen tussen de meldingen. */
+    const val CHANNEL_SILENT = "stil"
 
     const val ID_ALERT = 1
     const val ID_SEEN = 2
@@ -37,6 +39,13 @@ object Notifications {
         nm.createNotificationChannel(
             NotificationChannel(CHANNEL_STATUS, context.getString(R.string.channel_status), NotificationManager.IMPORTANCE_DEFAULT).apply {
                 description = context.getString(R.string.channel_status_desc)
+            }
+        )
+        nm.createNotificationChannel(
+            NotificationChannel(CHANNEL_SILENT, context.getString(R.string.channel_silent), NotificationManager.IMPORTANCE_LOW).apply {
+                description = context.getString(R.string.channel_silent_desc)
+                setSound(null, null)
+                enableVibration(false)
             }
         )
     }

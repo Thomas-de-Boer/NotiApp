@@ -106,7 +106,8 @@ private fun HistoryRow(entry: History.Entry) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Text(entry.text, style = MaterialTheme.typography.titleMedium)
-            Text("$who · $time", style = MaterialTheme.typography.bodySmall)
+            val icon = when (entry.mode) { "BELLEN" -> "📞"; "STIL" -> "🔕"; else -> "🔔" }
+            Text("$icon $who · $time", style = MaterialTheme.typography.bodySmall)
             Text(status, style = MaterialTheme.typography.bodyMedium, color = color)
         }
     }

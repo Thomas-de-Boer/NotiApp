@@ -31,6 +31,10 @@ object History {
         /** Bij verstuurde berichten: wie het gezien heeft. */
         val seenBy: List<String> = emptyList(),
         val status: Status = Status.NIEUW,
+        /** Id van de telefoon van de afzender (nodig om "gezien" terug te sturen). */
+        val senderId: String = "",
+        /** MELDING, BELLEN of STIL. */
+        val mode: String = "MELDING",
     )
 
     private const val MAX_ENTRIES = 200
@@ -52,13 +56,13 @@ object History {
             .getOrDefault(emptyList())
     }
 
-    fun addSent(alertId: String, from: String, to: List<String>, text: String) =
-        update { listOf(Entry(alertId, Direction.VERSTUURD, from, to, text, System.currentTimeMillis())) + it }
+    fun addSent(alertId: String, from: String, to: List<String>, text: String, mode: String) =
+        update { listOf(Entry(alertId, Direction.VERSTUURD, from, to, text, System.currentTimeMillis(), mode = mode)) + it }
 
-    fun addReceived(alertId: String, from: String, to: List<String>, text: String, time: Long) =
+    fun addReceived(alertId: String, from: String, to: List<String>, text: String, time: Long, senderId: String, mode: String) =
         update { list ->
             if (list.any { it.alertId == alertId && it.direction == Direction.ONTVANGEN }) list
-            else listOf(Entry(alertId, Direction.ONTVANGEN, from, to, text, time)) + list
+            else listOf(Entry(alertId, Direction.ONTVANGEN, from, to, text, time, senderId = senderId, mode = mode)) + list
         }
 
     /**
@@ -87,6 +91,9 @@ object History {
         }
     }
 
+    fun received(alertId: String): Entry? =
+        _entries.value.firstOrNull { it.direction == Direction.ONTVANGEN && it.alertId == alertId }
+
     fun lastSent(alertId: String? = null): Entry? =
         _entries.value.firstOrNull { it.direction == Direction.VERSTUURD && (alertId == null || it.alertId == alertId) }
 
@@ -110,6 +117,8 @@ object History {
                     .put("time", e.time)
                     .put("seenBy", JSONArray(e.seenBy))
                     .put("status", e.status.name)
+                    .put("senderId", e.senderId)
+                    .put("mode", e.mode)
             )
         }
     }.toString()
@@ -128,6 +137,8 @@ object History {
                     time = o.optLong("time"),
                     seenBy = o.optJSONArray("seenBy").toStringList(),
                     status = runCatching { Status.valueOf(o.optString("status")) }.getOrDefault(Status.NIEUW),
+                    senderId = o.optString("senderId"),
+                    mode = o.optString("mode", "BELLEN"),
                 )
             }.getOrNull()
         }

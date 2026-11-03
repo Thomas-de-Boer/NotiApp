@@ -13,8 +13,19 @@ data class FamilyMessage(
     val to: List<String> = emptyList(),
     /** Bij HELLO / HELLO_REPLY: het FCM-adres (token) van de afzender. */
     val token: String = "",
+    /** Bij ALERT: hoe het bericht binnenkomt (melding, bellen of stil). */
+    val mode: Mode = Mode.MELDING,
     val sentAt: Long = System.currentTimeMillis(),
 ) {
+    enum class Mode {
+        /** Gewone melding met geluid. */
+        MELDING,
+        /** Melding, en na 30 seconden zonder reactie bellen. */
+        BELLEN,
+        /** Stille melding: geen geluid, alleen tussen de meldingen. */
+        STIL,
+    }
+
     enum class Type {
         /** Een gezinsbericht dat laat bellen. */
         ALERT,
@@ -39,6 +50,7 @@ data class FamilyMessage(
         "originalSenderId" to originalSenderId,
         "to" to to.joinToString(SEPARATOR),
         "token" to token,
+        "mode" to mode.name,
         "sentAt" to sentAt.toString(),
     )
 
@@ -56,6 +68,8 @@ data class FamilyMessage(
                 originalSenderId = data["originalSenderId"].orEmpty(),
                 to = data["to"]?.split(SEPARATOR)?.filter { it.isNotEmpty() }.orEmpty(),
                 token = data["token"].orEmpty(),
+                // Oudere versies van de app kenden alleen bellen.
+                mode = runCatching { Mode.valueOf(data["mode"]!!) }.getOrDefault(Mode.BELLEN),
                 sentAt = data["sentAt"]?.toLongOrNull() ?: System.currentTimeMillis(),
             )
         }

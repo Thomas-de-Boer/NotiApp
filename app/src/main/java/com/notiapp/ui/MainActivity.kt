@@ -33,6 +33,7 @@ import com.notiapp.R
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import com.notiapp.alert.AlertService
+import com.notiapp.alert.MessageNotifier
 import com.notiapp.data.History
 import com.notiapp.data.Members
 import com.notiapp.data.Settings
@@ -95,7 +96,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             statusCard = { showMessage -> SentStatusCard(s, showMessage) },
-                            onSent = { m -> History.addSent(m.alertId, m.senderName, m.to, m.text) },
+                            onSent = { m -> History.addSent(m.alertId, m.senderName, m.to, m.text, m.mode.name) },
                         )
                     }
                 }
@@ -112,7 +113,12 @@ class MainActivity : ComponentActivity() {
     private fun handleAck(intent: Intent?) {
         val alertId = intent?.getStringExtra(AlertService.EXTRA_ALERT_ID) ?: return
         intent.removeExtra(AlertService.EXTRA_ALERT_ID)
-        AlertService.acknowledge(this, alertId)
+        if (AlertService.active.value?.message?.alertId == alertId) {
+            AlertService.acknowledge(this, alertId) // belbericht
+        } else {
+            val context = applicationContext
+            lifecycleScope.launch { MessageNotifier.acknowledge(context, alertId) } // gewone of stille melding
+        }
     }
 
     /** Alle telefoons luisteren naar hetzelfde gezinskanaal. */

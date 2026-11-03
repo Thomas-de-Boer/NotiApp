@@ -24,6 +24,14 @@
     <string name="home_sent_to">Verstuurd naar %1$s ✓</string>
     <string name="home_member_gone">%1$s heeft de app niet meer en is van de lijst gehaald.</string>
     <string name="home_to">Aan:</string>
+    <string name="home_how">Hoe:</string>
+    <string name="mode_melding">🔔 Melding</string>
+    <string name="mode_bellen">📞 Bellen</string>
+    <string name="mode_stil">🔕 Stil</string>
+    <string name="mode_melding_hint">Gewone melding met geluid.</string>
+    <string name="mode_bellen_hint">Melding, en na 30 seconden zonder reactie gaat de telefoon bellen.</string>
+    <string name="mode_stil_hint">Geen geluid: het bericht staat gewoon tussen de meldingen.</string>
+    <string name="home_retract">Bericht intrekken</string>
     <string name="home_fill_in">Vul aan</string>
     <string name="home_send">Versturen</string>
     <string name="home_custom">Eigen bericht… ✏️</string>
@@ -97,6 +105,9 @@
     <string name="channel_ringing_desc">Als je niet op een bericht reageert, gaat de telefoon bellen</string>
     <string name="channel_status">Gezien</string>
     <string name="channel_status_desc">Wie jouw bericht heeft gezien</string>
+    <string name="channel_silent">Stille berichten</string>
+    <string name="channel_silent_desc">Gezinsberichten zonder geluid</string>
+    <string name="alert_title_silent">%1$s 🔕</string>
     <string name="alert_title">%1$s 🔔</string>
     <string name="alert_ok">OK, gezien</string>
     <string name="seen_title">Je bericht is gezien ✓</string>

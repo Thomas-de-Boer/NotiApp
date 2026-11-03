@@ -72,7 +72,10 @@ class AlertService : Service() {
         // Een vorig bericht dat nog openstond is gemist.
         _active.value?.let { History.setReceivedStatus(it.message.alertId, History.Status.GEMIST) }
         if (!isTest) {
-            History.addReceived(message.alertId, message.senderName, message.to, message.text, message.sentAt)
+            History.addReceived(
+                message.alertId, message.senderName, message.to, message.text, message.sentAt,
+                senderId = message.senderId, mode = message.mode.name,
+            )
         }
         _active.value = ActiveAlert(message, ringing = false, isTest = isTest)
         startInForeground(buildNotification(message, ringing = false))
@@ -113,21 +116,7 @@ class AlertService : Service() {
         }
         // Laat de afzender weten dat we het gezien hebben.
         scope.launch {
-            val me = Settings(applicationContext).current()
-            withTimeoutOrNull(20_000) {
-                runCatching {
-                    FcmSender.send(
-                        applicationContext,
-                        FamilyMessage(
-                            type = FamilyMessage.Type.ACK,
-                            alertId = alert.message.alertId,
-                            senderId = me.senderId,
-                            senderName = me.name,
-                            originalSenderId = alert.message.senderId,
-                        ),
-                    )
-                }.onFailure { Log.w(TAG, "Bevestiging versturen mislukt", it) }
-            }
+            MessageNotifier.sendAck(applicationContext, alert.message.alertId, alert.message.senderId)
             stop()
         }
     }

@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.notiapp.alert.AlertService
+import com.notiapp.alert.MessageNotifier
 import com.notiapp.alert.SeenNotifier
 import com.notiapp.data.History
 import com.notiapp.data.Members
@@ -30,9 +31,16 @@ class FamilyMessagingService : FirebaseMessagingService() {
         when (message.type) {
             FamilyMessage.Type.ALERT -> {
                 runBlocking { members.touch(message.senderId, message.senderName) }
+                if (message.mode != FamilyMessage.Mode.BELLEN) {
+                    // Gewone of stille melding: ook later nog nuttig om te zien.
+                    MessageNotifier.show(applicationContext, message)
+                    return
+                }
                 val ageMs = System.currentTimeMillis() - message.sentAt
                 if (ageMs > MAX_AGE_MS) {
-                    Log.i(TAG, "Oud bericht genegeerd (${ageMs / 1000}s)")
+                    // Te laat om nog te bellen: dan maar een gewone melding.
+                    Log.i(TAG, "Oud belbericht (${ageMs / 1000}s): alleen een melding")
+                    MessageNotifier.show(applicationContext, message.copy(mode = FamilyMessage.Mode.MELDING))
                     return
                 }
                 AlertService.startAlert(applicationContext, message, Settings.RING_DELAY_SECONDS)
@@ -43,7 +51,10 @@ class FamilyMessagingService : FirebaseMessagingService() {
                     History.markSeenBy(message.alertId, message.senderName)?.let { SeenNotifier.show(applicationContext, it) }
                 }
             }
-            FamilyMessage.Type.CANCEL -> AlertService.cancel(applicationContext, message.alertId)
+            FamilyMessage.Type.CANCEL -> {
+                AlertService.cancel(applicationContext, message.alertId)
+                MessageNotifier.cancel(applicationContext, message.alertId)
+            }
             FamilyMessage.Type.HELLO -> runBlocking {
                 val isNew = members.upsert(message.senderId, message.senderName, message.token)
                 // Een nieuwe telefoon: laat weten dat wij er ook zijn.

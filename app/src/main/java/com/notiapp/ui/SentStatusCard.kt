@@ -76,7 +76,9 @@ fun SentStatusCard(settings: AppSettings, onError: (String) -> Unit) {
                             }
                         }
                     },
-                ) { Text(stringResource(R.string.home_cancel_alert)) }
+                ) {
+                    Text(stringResource(if (sent.mode == "BELLEN") R.string.home_cancel_alert else R.string.home_retract))
+                }
                 TextButton(onClick = { hiddenId = sent.alertId }) { Text(stringResource(R.string.home_hide)) }
             }
         }

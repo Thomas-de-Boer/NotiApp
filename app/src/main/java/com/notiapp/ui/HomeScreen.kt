@@ -70,6 +70,8 @@ fun HomeScreen(
     var fillInPreset by rememberSaveable { mutableStateOf<String?>(null) }
     // Gekozen ontvangers (ids). Leeg = iedereen.
     var selected by rememberSaveable { mutableStateOf(emptyList<String>()) }
+    // Hoe het bericht binnenkomt. Standaard: gewone melding.
+    var mode by rememberSaveable { mutableStateOf(FamilyMessage.Mode.MELDING) }
 
     val sentText = stringResource(R.string.home_sent)
     val sentToText = stringResource(R.string.home_sent_to)
@@ -86,12 +88,14 @@ fun HomeScreen(
             senderName = settings.name,
             text = text,
             to = recipients.map { it.name },
+            mode = mode,
         )
         scope.launch {
             try {
                 if (recipients.isEmpty()) {
                     FcmSender.send(context, message)
                     onSent(message)
+                    mode = FamilyMessage.Mode.MELDING
                     snackbar.showSnackbar(sentText)
                 } else {
                     // Alleen naar de gekozen telefoons, zodat de anderen niets merken.
@@ -112,6 +116,7 @@ fun HomeScreen(
                     if (reached.isNotEmpty()) {
                         onSent(message.copy(to = reached.map { it.name }))
                         selected = emptyList()
+                        mode = FamilyMessage.Mode.MELDING
                     }
                     snackbar.showSnackbar(
                         when {
@@ -154,6 +159,7 @@ fun HomeScreen(
                     onChange = { selected = it },
                 )
             }
+            item(span = { GridItemSpan(2) }) { ModeRow(mode = mode, onChange = { mode = it }) }
             items(settings.presets) { preset ->
                 Card(
                     onClick = {
@@ -234,6 +240,44 @@ private fun RecipientRow(members: List<Member>, selected: List<String>, onChange
             )
         }
     }
+}
+
+/** "Hoe:" — gewone melding (standaard), bellen na 30 seconden, of stil. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ModeRow(mode: FamilyMessage.Mode, onChange: (FamilyMessage.Mode) -> Unit) {
+    Column {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                stringResource(R.string.home_how),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.align(Alignment.CenterVertically).padding(end = 4.dp),
+            )
+            FamilyMessage.Mode.entries.forEach { option ->
+                FilterChip(
+                    selected = option == mode,
+                    onClick = { onChange(option) },
+                    label = { Text(stringResource(option.label())) },
+                )
+            }
+        }
+        Text(stringResource(mode.hint()), style = MaterialTheme.typography.bodySmall)
+    }
+}
+
+private fun FamilyMessage.Mode.label() = when (this) {
+    FamilyMessage.Mode.MELDING -> R.string.mode_melding
+    FamilyMessage.Mode.BELLEN -> R.string.mode_bellen
+    FamilyMessage.Mode.STIL -> R.string.mode_stil
+}
+
+private fun FamilyMessage.Mode.hint() = when (this) {
+    FamilyMessage.Mode.MELDING -> R.string.mode_melding_hint
+    FamilyMessage.Mode.BELLEN -> R.string.mode_bellen_hint
+    FamilyMessage.Mode.STIL -> R.string.mode_stil_hint
 }
 
 /** Markeert het "Eigen bericht"-venster (in plaats van een vast bericht met …). */
