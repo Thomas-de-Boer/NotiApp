@@ -87,6 +87,8 @@ fun SettingsScreen(settings: AppSettings, store: Settings, onOpenPermissions: ()
                 )
             }
             item { HorizontalDivider() }
+            item { SoundSettings(settings, store) }
+            item { HorizontalDivider() }
             item {
                 Text(stringResource(R.string.settings_presets), style = MaterialTheme.typography.titleMedium)
                 Text(stringResource(R.string.settings_presets_hint), style = MaterialTheme.typography.bodySmall)
