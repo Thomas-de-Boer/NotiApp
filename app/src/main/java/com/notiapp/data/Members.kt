@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import org.json.JSONArray
 import org.json.JSONObject
@@ -39,6 +41,7 @@ class Members(private val context: Context) {
         private val KEY_LAST_ANNOUNCE = longPreferencesKey("laatst_aangemeld")
         private val KEY_LAST_CHECK = longPreferencesKey("laatst_gecontroleerd")
         private const val INTERVAL_MS = 6 * 60 * 60 * 1000L
+        private val announceLock = Mutex()
     }
 
     val members: Flow<List<Member>> = context.membersStore.data.map { p -> parse(p[KEY_MEMBERS]) }
@@ -75,15 +78,26 @@ class Members(private val context: Context) {
     }
 
     /** Meldt deze telefoon aan bij het gezin (HELLO). [force] = ook als het kort geleden al gebeurd is. */
-    suspend fun announce(force: Boolean = false) {
-        if (FirebaseApp.getApps(context).isEmpty()) return
+    suspend fun announce(force: Boolean = false) = announceLock.withLock {
+        if (FirebaseApp.getApps(context).isEmpty()) return@withLock
         val me = Settings(context).current()
-        if (me.name.isBlank()) return
+        if (me.name.isBlank()) return@withLock
         val last = context.membersStore.data.first()[KEY_LAST_ANNOUNCE] ?: 0
-        if (!force && System.currentTimeMillis() - last < INTERVAL_MS) return
+        if (!force && System.currentTimeMillis() - last < INTERVAL_MS) return@withLock
         runCatching {
-            val token = myToken()
-            FcmSender.send(context, hello(FamilyMessage.Type.HELLO, me, token))
+            val hello = hello(FamilyMessage.Type.HELLO, me, myToken())
+            FcmSender.send(context, hello)
+            // Ook rechtstreeks naar wie we al kennen: dat werkt ook als het gezinskanaal
+            // op een (nieuwe) telefoon nog niet klaar is.
+            current().forEach { member ->
+                try {
+                    FcmSender.sendToToken(context, hello, member.token)
+                } catch (e: FcmSender.UnregisteredException) {
+                    remove(member.id)
+                } catch (e: FcmSender.SendException) {
+                    Log.w(TAG, "Aanmelden bij ${member.name} mislukt: ${e.message}")
+                }
+            }
             context.membersStore.edit { it[KEY_LAST_ANNOUNCE] = System.currentTimeMillis() }
             Log.i(TAG, "Aangemeld bij het gezin als ${me.name}")
         }.onFailure { Log.w(TAG, "Aanmelden bij het gezin mislukt", it) }

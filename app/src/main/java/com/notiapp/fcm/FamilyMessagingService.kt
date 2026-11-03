@@ -17,9 +17,15 @@ class FamilyMessagingService : FirebaseMessagingService() {
         val message = FamilyMessage.fromData(remote.data) ?: return
         Log.i(TAG, "Bericht ontvangen: ${message.type} van ${message.senderName}")
         val me = runBlocking { Settings(applicationContext).current() }
-        if (me.name.isBlank()) return // app nog niet ingesteld
         if (message.senderId == me.senderId) return // eigen bericht
         val members = Members(applicationContext)
+        if (me.name.isBlank()) {
+            // App nog niet ingesteld: wel onthouden wie er al is, maar nog niet reageren.
+            if (message.type == FamilyMessage.Type.HELLO || message.type == FamilyMessage.Type.HELLO_REPLY) {
+                runBlocking { members.upsert(message.senderId, message.senderName, message.token) }
+            }
+            return
+        }
 
         when (message.type) {
             FamilyMessage.Type.ALERT -> {
