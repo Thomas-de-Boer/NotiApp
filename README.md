@@ -1,51 +1,72 @@
-# Gezinsbel 🔔
+# Noti App 🔔
 
-Een eenvoudige, privé Android-app voor ons gezin. Druk op een knop zoals **"Het eten is klaar"** en alle
-telefoons in het gezin krijgen een melding. Tikt iemand de melding niet aan, dan gaat zijn of haar telefoon
-na een tijdje **bellen als een inkomend gesprek** totdat er op "OK" gedrukt wordt.
+A simple, private Android app for our family. Tap a button such as **"Het eten is klaar"** (dinner's ready) and
+every phone in the family gets a notification. If someone doesn't tap the notification, their phone starts
+**ringing like an incoming call** after a short delay, until they press "OK".
 
-## Hoe werkt het?
-- Elke telefoon met de app luistert naar hetzelfde gezinskanaal via Firebase Cloud Messaging (gratis, van Google).
-- Als je op een knop drukt, stuurt jouw telefoon het bericht naar dat kanaal.
-- Er is geen eigen server, geen account en geen creditcard nodig.
+The app itself is in Dutch. These setup instructions are in English to match the English Firebase / Google Cloud screens.
 
-## Eenmalige installatie (Firebase)
+## How it works
+- Every phone with the app listens to the same family channel (an FCM *topic* called `gezin`) via
+  Firebase Cloud Messaging, Google's free push service.
+- When you tap a button, your phone sends the message to that channel.
+- No own server, no accounts and no credit card needed (Firebase free **Spark** plan).
 
-### 1. Firebase-project aanmaken
-1. Ga naar <https://console.firebase.google.com> en log in met je Google-account.
-2. Klik **Project toevoegen**, kies een naam (bijv. `gezinsbel`). Google Analytics mag uit.
-3. Blijf op het gratis **Spark**-abonnement, een creditcard is niet nodig.
-4. Klik in het project op het **Android-icoon** om een app toe te voegen:
-   - Pakketnaam: `com.notiapp`
-   - Klik **App registreren** en download **`google-services.json`**.
-5. Zet dat bestand in de map `app/` van dit project (dus `app/google-services.json`).
+## One-time setup
 
-### 2. Sleutel om berichten te versturen
-1. Ga naar <https://console.cloud.google.com/iam-admin/serviceaccounts> en kies hetzelfde project.
-2. Klik **Serviceaccount maken**, met als naam `gezinsbel-zender`.
-3. Geef het **alleen** de rol **Firebase Cloud Messaging API Admin** en klik op **Gereed**.
-4. Klik op het nieuwe serviceaccount, ga naar **Sleutels**, kies **Sleutel toevoegen**, dan **Nieuwe sleutel maken**, dan **JSON**.
-5. Hernoem het gedownloade bestand naar `fcm_service_account.json` en zet het in
-   `app/src/main/assets/` (dus `app/src/main/assets/fcm_service_account.json`).
+### 1. Create the Firebase project
+1. Go to <https://console.firebase.google.com> and sign in with your Google account.
+2. Click **Create a project** (or **Add project**) and give it a name, e.g. `noti-app`.
+   Google Analytics can be turned off.
+3. Stay on the free **Spark** plan. No credit card is needed.
+4. In the project overview, click the **Android** icon to add an app:
+   - **Android package name:** `com.notiapp`
+   - Click **Register app**, then **Download google-services.json**.
+   - You can skip the remaining "Add Firebase SDK" steps. The project is already set up for that.
+5. Put the file in the `app/` folder of this project: `app/google-services.json`.
 
-> ⚠️ Deze twee bestanden zijn geheim en staan bewust **niet** in git (zie `.gitignore`).
-> Deel de app alleen binnen het gezin.
+### 2. Create the key that lets the app send messages
+The app sends messages using a *service account key*. We create one that is **only** allowed to send notifications.
 
-### 3. App bouwen en installeren
-1. Open het project in Android Studio.
-2. Kies **Build**, dan **Generate App Bundles or APKs**, dan **Build APK(s)**.
-3. Stuur het APK-bestand (`app/build/outputs/apk/debug/app-debug.apk`) naar elke telefoon in het gezin
-   (bijv. via WhatsApp of Google Drive) en installeer het. Sta "installeren uit onbekende bronnen" toe.
-4. Open de app op elke telefoon, vul je naam in en geef alle gevraagde toestemmingen.
+1. Go to <https://console.cloud.google.com/iam-admin/serviceaccounts>.
+2. At the top of the page, make sure the **same project** as your Firebase project is selected.
+3. Click **+ Create service account**.
+   - **Service account name:** `noti-app-sender`
+   - Click **Create and continue**.
+4. Under **Grant this service account access to project**, open the **Select a role** box, type
+   `Firebase Cloud Messaging API Admin`, select it, and click **Continue**, then **Done**.
+   (Don't add any other roles.)
+5. In the list, click the new service account (`noti-app-sender@...`).
+6. Open the **Keys** tab, then click **Add key**, then **Create new key**. Choose **JSON** and click **Create**.
+   A `.json` file is downloaded.
+7. Rename that file to `fcm_service_account.json` and put it in the folder `app/src/main/assets/`
+   (create the `assets` folder if it doesn't exist). The full path is:
+   `app/src/main/assets/fcm_service_account.json`
 
-## Gebruik
-- **Knop indrukken**: alle andere gezinsleden krijgen meteen een melding.
-- **Niet gereageerd?** Na 30 seconden (instelbaar) gaat de telefoon bellen tot er op **OK** gedrukt wordt.
-- **Gezien door**: je ziet wie je bericht heeft gezien.
-- **Annuleren**: stop het bellen op alle telefoons.
-- **Instellingen**: berichten aanpassen, toevoegen of verwijderen, je naam en de belvertraging wijzigen.
+> If step 6 says key creation is disabled by an organization policy: that only happens with work or school
+> Google accounts. Use a personal Google account (gmail.com) for the Firebase project instead.
 
-## Tips als meldingen niet aankomen
-- Zet bij **Batterij** voor Gezinsbel de optie op **Onbeperkt** / **Niet optimaliseren**.
-- Samsung: Instellingen, dan Batterij, dan Achtergrondgebruikslimieten. Zet Gezinsbel **niet** bij "slapende apps".
-- Controleer dat meldingen en "volledig scherm meldingen" voor de app aan staan.
+> ⚠️ Both files are secret and are deliberately **not** stored in git (see `.gitignore`).
+> Only share the app with your family.
+
+### 3. Build and install the app
+1. Open the project in Android Studio.
+2. Choose **Build**, then **Generate App Bundles or APKs**, then **Generate APKs**.
+3. Send the APK file (`app/build/outputs/apk/debug/app-debug.apk`) to each family phone (e.g. via WhatsApp
+   or Google Drive) and install it. Allow "install unknown apps" when asked.
+4. Open the app on each phone, enter your name and grant all requested permissions.
+
+## Using the app
+- **Tap a button:** everyone else in the family gets a notification right away.
+- **No response?** After 30 seconds (adjustable) the phone rings until someone presses **"OK, gezien"**.
+- **"Gezien door …"** (seen by): you can see who has seen your message.
+- **"Stop het bellen bij iedereen"**: stops the ringing on every phone.
+- **Instellingen** (settings): edit, add or remove messages, change your name and the ring delay,
+  and use **"Test het bellen"** to test the ringing on your own phone.
+- A message containing `…` (e.g. "We vertrekken naar …") asks you to fill in the rest when sending.
+
+## If notifications don't arrive
+- Set the app's **Battery** setting to **Unrestricted** / **Don't optimize**.
+- Samsung: Settings, then Battery, then Background usage limits. Make sure Noti App is **not** in "Sleeping apps".
+- Check that notifications and "full screen notifications" are allowed for the app.
+- Phones that were off or offline for more than 15 minutes ignore the old message when they come back online.
