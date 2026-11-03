@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
@@ -41,13 +42,20 @@ import androidx.compose.ui.unit.dp
 import com.notiapp.R
 import com.notiapp.alert.AlertService
 import com.notiapp.data.AppSettings
+import com.notiapp.data.Members
 import com.notiapp.data.Settings
 import com.notiapp.fcm.FamilyMessage
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(settings: AppSettings, store: Settings, onOpenPermissions: () -> Unit, onBack: () -> Unit) {
+fun SettingsScreen(
+    settings: AppSettings,
+    store: Settings,
+    onOpenPermissions: () -> Unit,
+    onOpenMembers: () -> Unit,
+    onBack: () -> Unit,
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var name by remember { mutableStateOf(settings.name) }
@@ -55,7 +63,10 @@ fun SettingsScreen(settings: AppSettings, store: Settings, onOpenPermissions: ()
 
     fun saveAndClose() {
         scope.launch {
-            if (name.isNotBlank()) store.setName(name)
+            if (name.isNotBlank() && name.trim() != settings.name) {
+                store.setName(name)
+                Members(context.applicationContext).announce(force = true) // anderen krijgen de nieuwe naam
+            }
             store.setPresets(presets.toList().ifEmpty { Settings.DEFAULT_PRESETS })
             onBack()
         }
@@ -85,6 +96,12 @@ fun SettingsScreen(settings: AppSettings, store: Settings, onOpenPermissions: ()
                     label = { Text(stringResource(R.string.setup_name_label)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
+            }
+            item {
+                OutlinedButton(onClick = onOpenMembers, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Filled.Groups, contentDescription = null)
+                    Text(stringResource(R.string.members_title), modifier = Modifier.padding(start = 8.dp))
+                }
             }
             item { HorizontalDivider() }
             item { SoundSettings(settings, store) }

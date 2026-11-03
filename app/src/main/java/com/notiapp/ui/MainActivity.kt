@@ -28,11 +28,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.lifecycleScope
 import com.notiapp.R
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import com.notiapp.alert.AlertService
 import com.notiapp.data.History
+import com.notiapp.data.Members
 import com.notiapp.data.Settings
 import kotlinx.coroutines.launch
 
@@ -42,7 +44,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         handleAck(intent)
         val store = Settings(applicationContext)
+        val members = Members(applicationContext)
         subscribeToFamily()
+        // Aanmelden bij het gezin en controleren wie de app nog heeft (hooguit eens per 6 uur).
+        lifecycleScope.launch {
+            members.announce()
+            members.checkMembers()
+        }
         setContent {
             NotiAppTheme {
                 Surface(Modifier.fillMaxSize()) {
@@ -52,7 +60,12 @@ class MainActivity : ComponentActivity() {
                     val s = settings ?: return@Surface // laden
                     when {
                         s.name.isBlank() ->
-                            SetupScreen(initialName = "") { name -> scope.launch { store.setName(name) } }
+                            SetupScreen(initialName = "") { name ->
+                                scope.launch {
+                                    store.setName(name)
+                                    members.announce(force = true)
+                                }
+                            }
                         screen == Screen.PERMISSIONS -> {
                             BackHandler { screen = Screen.SETTINGS }
                             SetupScreen(initialName = s.name) { name ->
@@ -64,8 +77,10 @@ class MainActivity : ComponentActivity() {
                             settings = s,
                             store = store,
                             onOpenPermissions = { screen = Screen.PERMISSIONS },
+                            onOpenMembers = { screen = Screen.MEMBERS },
                             onBack = { screen = Screen.HOME },
                         )
+                        screen == Screen.MEMBERS -> MembersScreen(s, onBack = { screen = Screen.SETTINGS })
                         screen == Screen.HISTORY -> HistoryScreen(onBack = { screen = Screen.HOME })
                         else -> HomeScreen(
                             settings = s,
@@ -110,7 +125,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private enum class Screen { HOME, SETTINGS, PERMISSIONS, HISTORY }
+private enum class Screen { HOME, SETTINGS, PERMISSIONS, HISTORY, MEMBERS }
 
 @Composable
 fun NotiAppTheme(content: @Composable () -> Unit) {
