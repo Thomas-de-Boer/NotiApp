@@ -27,6 +27,8 @@
     <string name="home_last_sent">Laatst verstuurd: %1$s</string>
     <string name="home_seen_by">Gezien door: %1$s</string>
     <string name="home_seen_nobody">Nog door niemand gezien…</string>
+    <string name="home_cancel_alert">Stop het bellen bij iedereen</string>
+    <string name="home_hide">Verbergen</string>
 
     <!-- Meldingen -->
     <string name="channel_messages">Gezinsberichten</string>

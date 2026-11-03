@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
                         } else {
                             HomeScreen(
                                 settings = s,
-                                statusCard = { SentStatusCard() },
+                                statusCard = { showMessage -> SentStatusCard(s, showMessage) },
                                 onSent = SentAlerts::onSent,
                             )
                         }

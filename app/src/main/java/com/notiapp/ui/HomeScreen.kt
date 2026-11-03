@@ -52,7 +52,7 @@ import java.util.UUID
 fun HomeScreen(
     settings: AppSettings,
     actions: @Composable () -> Unit = {},
-    statusCard: @Composable () -> Unit = {},
+    statusCard: @Composable (showMessage: (String) -> Unit) -> Unit = {},
     onSent: (FamilyMessage) -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -103,7 +103,7 @@ fun HomeScreen(
                     Text(stringResource(R.string.home_hint), style = MaterialTheme.typography.bodyMedium)
                 }
             }
-            item(span = { GridItemSpan(2) }) { statusCard() }
+            item(span = { GridItemSpan(2) }) { statusCard { msg -> scope.launch { snackbar.showSnackbar(msg) } } }
             items(settings.presets) { preset ->
                 Card(
                     onClick = {
