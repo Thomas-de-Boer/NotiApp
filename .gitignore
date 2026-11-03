@@ -15,3 +15,7 @@ local.properties
 # Geheime Firebase-bestanden: NOOIT committen
 app/google-services.json
 app/src/main/assets/fcm_service_account.json
+
+# Signing keys
+*.jks
+*.keystore
