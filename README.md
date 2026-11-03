@@ -51,9 +51,19 @@ The app sends messages using a *service account key*. We create one that is **on
 
 ### 3. Build and install the app
 1. Open the project in Android Studio.
-2. Choose **Build**, then **Generate App Bundles or APKs**, then **Generate APKs**.
-3. Send the APK file (`app/build/outputs/apk/debug/app-debug.apk`) to each family phone (e.g. via WhatsApp
+2. Build the **release** version: open the **Terminal** tab at the bottom of Android Studio and run
+   `.\gradlew assembleRelease`
+   (or choose **Build**, then **Select Build Variant…**, set it to **release**, then **Build**, then
+   **Generate App Bundles or APKs**, then **Generate APKs**).
+   The first release build can take several minutes. After that it's much faster.
+3. Send the APK file (`app/build/outputs/apk/release/app-release.apk`) to each family phone (e.g. via WhatsApp
    or Google Drive) and install it. Allow "install unknown apps" when asked.
+
+> The release version is signed with Android Studio's debug key (`C:\Users\<you>\.android\debug.keystore`).
+> Keep a backup of that file: updates only install over the existing app when they're signed with the same key.
+
+**Updating the app later:** increase `versionCode` (e.g. `1` to `2`) in `app/build.gradle.kts`, build the release
+APK again, and install it over the old one. Names and settings on the phones are kept.
 4. Open the app on each phone, enter your name and grant all requested permissions.
 
 ## Using the app
