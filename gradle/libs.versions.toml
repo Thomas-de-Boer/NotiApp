@@ -1,12 +1,12 @@
 [versions]
 agp = "9.2.1"
 kotlin = "2.4.10"
-googleServices = "4.4.4"
+googleServices = "4.5.0"
 composeBom = "2026.06.01"
 activityCompose = "1.12.4"
 lifecycle = "2.10.0"
 datastore = "1.2.1"
-firebaseBom = "35.0.2"
+firebaseBom = "35.1.0"
 googleAuth = "1.54.0"
 coroutinesPlayServices = "1.10.2"
 
