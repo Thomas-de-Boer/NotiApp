@@ -2,6 +2,8 @@ package com.notiapp.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
@@ -33,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -42,6 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notiapp.R
 import com.notiapp.data.AppSettings
+import com.notiapp.data.Member
+import com.notiapp.data.Members
 import com.notiapp.data.Settings
 import com.notiapp.fcm.FamilyMessage
 import com.notiapp.fcm.FcmSender
@@ -52,6 +58,7 @@ import java.util.UUID
 @Composable
 fun HomeScreen(
     settings: AppSettings,
+    members: List<Member> = emptyList(),
     actions: @Composable () -> Unit = {},
     statusCard: @Composable (showMessage: (String) -> Unit) -> Unit = {},
     onSent: (FamilyMessage) -> Unit = {},
@@ -61,24 +68,59 @@ fun HomeScreen(
     val snackbar = remember { SnackbarHostState() }
     var sending by remember { mutableStateOf(false) }
     var fillInPreset by rememberSaveable { mutableStateOf<String?>(null) }
+    // Gekozen ontvangers (ids). Leeg = iedereen.
+    var selected by rememberSaveable { mutableStateOf(emptyList<String>()) }
 
     val sentText = stringResource(R.string.home_sent)
+    val sentToText = stringResource(R.string.home_sent_to)
+    val goneText = stringResource(R.string.home_member_gone)
 
     fun send(text: String) {
         if (sending) return
         sending = true
+        val recipients = members.filter { it.id in selected }
         val message = FamilyMessage(
             type = FamilyMessage.Type.ALERT,
             alertId = UUID.randomUUID().toString(),
             senderId = settings.senderId,
             senderName = settings.name,
             text = text,
+            to = recipients.map { it.name },
         )
         scope.launch {
             try {
-                FcmSender.send(context, message)
-                onSent(message)
-                snackbar.showSnackbar(sentText)
+                if (recipients.isEmpty()) {
+                    FcmSender.send(context, message)
+                    onSent(message)
+                    snackbar.showSnackbar(sentText)
+                } else {
+                    // Alleen naar de gekozen telefoons, zodat de anderen niets merken.
+                    val reached = mutableListOf<Member>()
+                    val gone = mutableListOf<Member>()
+                    var error: String? = null
+                    recipients.forEach { member ->
+                        try {
+                            FcmSender.sendToToken(context, message, member.token)
+                            reached += member
+                        } catch (e: FcmSender.UnregisteredException) {
+                            gone += member
+                            Members(context.applicationContext).remove(member.id)
+                        } catch (e: FcmSender.SendException) {
+                            error = e.message
+                        }
+                    }
+                    if (reached.isNotEmpty()) {
+                        onSent(message.copy(to = reached.map { it.name }))
+                        selected = emptyList()
+                    }
+                    snackbar.showSnackbar(
+                        when {
+                            gone.isNotEmpty() -> goneText.format(gone.joinToString(", ") { it.name })
+                            reached.isEmpty() -> error.orEmpty()
+                            else -> sentToText.format(reached.joinToString(", ") { it.name })
+                        }
+                    )
+                }
             } catch (e: FcmSender.SendException) {
                 snackbar.showSnackbar(e.message ?: "")
             } finally {
@@ -105,6 +147,13 @@ fun HomeScreen(
                 }
             }
             item(span = { GridItemSpan(2) }) { statusCard { msg -> scope.launch { snackbar.showSnackbar(msg) } } }
+            item(span = { GridItemSpan(2) }) {
+                RecipientRow(
+                    members = members,
+                    selected = selected,
+                    onChange = { selected = it },
+                )
+            }
             items(settings.presets) { preset ->
                 Card(
                     onClick = {
@@ -149,6 +198,41 @@ fun HomeScreen(
             onDismiss = { fillInPreset = null },
             onSend = { text -> fillInPreset = null; send(text) },
         )
+    }
+}
+
+/**
+ * "Aan:" — kies naar wie het bericht gaat. "Iedereen" staat standaard aan; een naam kiezen
+ * zet "Iedereen" uit, en als je niemand meer gekozen hebt staat "Iedereen" weer aan.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun RecipientRow(members: List<Member>, selected: List<String>, onChange: (List<String>) -> Unit) {
+    // Ontvangers die niet meer in de lijst staan tellen niet mee.
+    val valid = selected.filter { id -> members.any { it.id == id } }
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            stringResource(R.string.home_to),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.align(Alignment.CenterVertically).padding(end = 4.dp),
+        )
+        FilterChip(
+            selected = valid.isEmpty(),
+            onClick = { onChange(emptyList()) },
+            label = { Text(stringResource(R.string.to_everyone)) },
+        )
+        members.sortedBy { it.name.lowercase() }.forEach { member ->
+            val isSelected = member.id in valid
+            FilterChip(
+                selected = isSelected,
+                onClick = { onChange(if (isSelected) valid - member.id else valid + member.id) },
+                label = { Text(member.name) },
+            )
+        }
     }
 }
 

@@ -21,6 +21,9 @@
     <string name="home_greeting">Hoi %1$s 👋</string>
     <string name="home_hint">Tik op een bericht om het naar het hele gezin te sturen.</string>
     <string name="home_sent">Verstuurd naar het gezin ✓</string>
+    <string name="home_sent_to">Verstuurd naar %1$s ✓</string>
+    <string name="home_member_gone">%1$s heeft de app niet meer en is van de lijst gehaald.</string>
+    <string name="home_to">Aan:</string>
     <string name="home_fill_in">Vul aan</string>
     <string name="home_send">Versturen</string>
     <string name="home_custom">Eigen bericht… ✏️</string>

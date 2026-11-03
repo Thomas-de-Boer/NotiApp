@@ -55,6 +55,7 @@ class MainActivity : ComponentActivity() {
             NotiAppTheme {
                 Surface(Modifier.fillMaxSize()) {
                     val settings by store.settings.collectAsState(initial = null)
+                    val familyMembers by members.members.collectAsState(initial = emptyList())
                     val scope = rememberCoroutineScope()
                     var screen by rememberSaveable { mutableStateOf(Screen.HOME) }
                     val s = settings ?: return@Surface // laden
@@ -84,6 +85,7 @@ class MainActivity : ComponentActivity() {
                         screen == Screen.HISTORY -> HistoryScreen(onBack = { screen = Screen.HOME })
                         else -> HomeScreen(
                             settings = s,
+                            members = familyMembers,
                             actions = {
                                 IconButton(onClick = { screen = Screen.HISTORY }) {
                                     Icon(Icons.Filled.History, stringResource(R.string.history_title))
