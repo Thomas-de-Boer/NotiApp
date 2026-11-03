@@ -100,6 +100,8 @@ class MainActivity : ComponentActivity() {
             return
         }
         FirebaseMessaging.getInstance().subscribeToTopic(Settings.TOPIC)
+            .addOnSuccessListener { Log.i("NotiApp", "Aangemeld bij gezinskanaal '${Settings.TOPIC}'") }
+            .addOnFailureListener { Log.e("NotiApp", "Aanmelden bij gezinskanaal mislukt", it) }
     }
 }
 

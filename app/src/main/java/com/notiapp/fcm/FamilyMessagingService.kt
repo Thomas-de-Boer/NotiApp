@@ -13,6 +13,7 @@ class FamilyMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remote: RemoteMessage) {
         val message = FamilyMessage.fromData(remote.data) ?: return
+        Log.i(TAG, "Bericht ontvangen: ${message.type} van ${message.senderName}")
         val me = runBlocking { Settings(applicationContext).current() }
         if (me.name.isBlank()) return // app nog niet ingesteld
         if (message.senderId == me.senderId) return // eigen bericht
