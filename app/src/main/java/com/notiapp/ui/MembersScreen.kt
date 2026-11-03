@@ -91,7 +91,9 @@ fun MembersScreen(settings: AppSettings, onBack: () -> Unit) {
         ) {
             item { MemberRow(name = settings.name, detail = stringResource(R.string.members_you), onRemove = null) }
             items(members.sortedBy { it.name.lowercase() }, key = { it.id }) { member ->
-                val seen = DateUtils.getRelativeTimeSpanString(
+                val justNow = stringResource(R.string.members_just_now)
+                val seen = if (System.currentTimeMillis() - member.lastSeen < DateUtils.MINUTE_IN_MILLIS) justNow
+                else DateUtils.getRelativeTimeSpanString(
                     member.lastSeen, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS,
                 ).toString()
                 MemberRow(

@@ -41,6 +41,7 @@
     <string name="members_you">Jij</string>
     <string name="members_last_seen">Laatst gezien %1$s</string>
     <string name="members_refresh">Vernieuwen</string>
+    <string name="members_just_now">zojuist</string>
     <string name="members_empty">Nog niemand anders gevonden. Gezinsleden verschijnen hier zodra ze de app hebben geïnstalleerd en hun naam hebben ingevuld.</string>
     <string name="members_hint">Nieuwe gezinsleden verschijnen vanzelf. Wie de app verwijdert, verdwijnt binnen een paar uur vanzelf van de lijst.</string>
     <string name="members_remove_title">%1$s verwijderen?</string>

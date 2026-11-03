@@ -61,8 +61,13 @@ object History {
             else listOf(Entry(alertId, Direction.ONTVANGEN, from, to, text, time)) + list
         }
 
-    /** Iemand heeft ons verstuurde bericht gezien. Geeft de bijgewerkte regel terug. */
+    /**
+     * Iemand heeft ons verstuurde bericht gezien. Geeft de bijgewerkte regel terug,
+     * of null als dit al bekend was (dan hoeft er geen nieuwe melding te komen).
+     */
     fun markSeenBy(alertId: String, name: String): Entry? {
+        val before = lastSent(alertId)
+        if (before == null || name in before.seenBy) return null
         update { list ->
             list.map {
                 if (it.alertId == alertId && it.direction == Direction.VERSTUURD && name !in it.seenBy) {
