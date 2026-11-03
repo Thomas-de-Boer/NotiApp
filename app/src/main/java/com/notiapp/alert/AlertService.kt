@@ -41,6 +41,7 @@ class AlertService : Service() {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var timerJob: Job? = null
+    private val ringer by lazy { Ringer(this) }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -63,8 +64,10 @@ class AlertService : Service() {
 
     private fun showAlert(message: FamilyMessage, delaySec: Int, isTest: Boolean) {
         timerJob?.cancel()
+        ringer.stop()
         _active.value = ActiveAlert(message, ringing = false, isTest = isTest)
         startInForeground(buildNotification(message, ringing = false))
+        notificationManager().cancel(Notifications.ID_RING) // eventueel vorig belbericht
 
         timerJob = scope.launch {
             delay(delaySec * 1000L)
@@ -79,7 +82,10 @@ class AlertService : Service() {
     private fun escalate() {
         val alert = _active.value ?: return
         _active.value = alert.copy(ringing = true)
-        notificationManager().notify(Notifications.ID_ALERT, buildNotification(alert.message, ringing = true))
+        // Een nieuwe melding (ander id) zodat Android het volledige scherm zeker opent.
+        startInForeground(buildNotification(alert.message, ringing = true), Notifications.ID_RING)
+        notificationManager().cancel(Notifications.ID_ALERT)
+        ringer.start()
     }
 
     private fun acknowledge(alertId: String?) {
@@ -117,9 +123,11 @@ class AlertService : Service() {
     /** Stopt met bellen en haalt de melding weg. */
     private fun finish(keepAlive: Boolean = false) {
         timerJob?.cancel()
+        ringer.stop()
         _active.value = null
         stopForeground(STOP_FOREGROUND_REMOVE)
         notificationManager().cancel(Notifications.ID_ALERT)
+        notificationManager().cancel(Notifications.ID_RING)
         if (!keepAlive) stopSelf()
     }
 
@@ -130,16 +138,17 @@ class AlertService : Service() {
     }
 
     override fun onDestroy() {
+        ringer.stop()
         _active.value = null
         scope.cancel()
         super.onDestroy()
     }
 
-    private fun startInForeground(notification: Notification) {
+    private fun startInForeground(notification: Notification, id: Int = Notifications.ID_ALERT) {
         if (Build.VERSION.SDK_INT >= 34) {
-            startForeground(Notifications.ID_ALERT, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+            startForeground(id, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
         } else {
-            startForeground(Notifications.ID_ALERT, notification)
+            startForeground(id, notification)
         }
     }
 
@@ -157,7 +166,16 @@ class AlertService : Service() {
             Intent(this, AlertService::class.java).setAction(ACTION_ACK).putExtra(EXTRA_ALERT_ID, message.alertId),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        return NotificationCompat.Builder(this, if (ringing) Notifications.CHANNEL_RINGING else Notifications.CHANNEL_MESSAGES)
+        val builder = NotificationCompat.Builder(this, if (ringing) Notifications.CHANNEL_RINGING else Notifications.CHANNEL_MESSAGES)
+        if (ringing) {
+            val fullScreen = PendingIntent.getActivity(
+                this, 3,
+                Intent(this, RingingActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+            builder.setFullScreenIntent(fullScreen, true)
+        }
+        return builder
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(getString(R.string.alert_title, message.senderName))
             .setContentText(message.text)

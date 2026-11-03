@@ -16,6 +16,7 @@ object Notifications {
 
     const val ID_ALERT = 1
     const val ID_SEEN = 2
+    const val ID_RING = 3
 
     fun createChannels(context: Context) {
         val nm = context.getSystemService(NotificationManager::class.java)

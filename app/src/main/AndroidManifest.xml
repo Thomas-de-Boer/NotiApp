@@ -28,6 +28,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".alert.RingingActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:showWhenLocked="true"
+            android:taskAffinity=""
+            android:turnScreenOn="true" />
+
         <service
             android:name=".alert.AlertService"
             android:exported="false"
