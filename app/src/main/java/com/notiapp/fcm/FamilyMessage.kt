@@ -7,6 +7,8 @@ data class FamilyMessage(
     val senderId: String,
     val senderName: String,
     val text: String = "",
+    /** Bij ACK: de id van de telefoon die het oorspronkelijke bericht stuurde. */
+    val originalSenderId: String = "",
     val sentAt: Long = System.currentTimeMillis(),
 ) {
     enum class Type { ALERT, ACK, CANCEL }
@@ -17,6 +19,7 @@ data class FamilyMessage(
         "senderId" to senderId,
         "senderName" to senderName,
         "text" to text,
+        "originalSenderId" to originalSenderId,
         "sentAt" to sentAt.toString(),
     )
 
@@ -29,6 +32,7 @@ data class FamilyMessage(
                 senderId = data["senderId"] ?: return null,
                 senderName = data["senderName"].orEmpty(),
                 text = data["text"].orEmpty(),
+                originalSenderId = data["originalSenderId"].orEmpty(),
                 sentAt = data["sentAt"]?.toLongOrNull() ?: System.currentTimeMillis(),
             )
         }

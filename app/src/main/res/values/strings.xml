@@ -24,4 +24,19 @@
     <string name="home_fill_in">Vul aan</string>
     <string name="home_send">Versturen</string>
     <string name="cancel">Annuleren</string>
+    <string name="home_last_sent">Laatst verstuurd: %1$s</string>
+    <string name="home_seen_by">Gezien door: %1$s</string>
+    <string name="home_seen_nobody">Nog door niemand gezien…</string>
+
+    <!-- Meldingen -->
+    <string name="channel_messages">Gezinsberichten</string>
+    <string name="channel_messages_desc">Nieuwe berichten van het gezin</string>
+    <string name="channel_ringing">Bellen</string>
+    <string name="channel_ringing_desc">Als je niet op een bericht reageert, gaat de telefoon bellen</string>
+    <string name="channel_status">Gezien</string>
+    <string name="channel_status_desc">Wie jouw bericht heeft gezien</string>
+    <string name="alert_title">%1$s 🔔</string>
+    <string name="alert_ok">OK, gezien</string>
+    <string name="seen_title">Je bericht is gezien ✓</string>
+    <string name="seen_by">Gezien door %1$s</string>
 </resources>
