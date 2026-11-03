@@ -67,13 +67,34 @@ APK again, and install it over the old one. Names and settings on the phones are
 4. Open the app on each phone, enter your name and grant all requested permissions.
 
 ## Using the app
-- **Tap a button:** everyone else in the family gets a notification right away.
-- **No response?** After 30 seconds (adjustable) the phone rings until someone presses **"OK, gezien"**.
+- **Tap a button:** the message is sent right away.
+- **"Aan:"** (to): choose who gets it. **"Iedereen"** (everyone) is the default. Tap one or more names to send a
+  personal or group message; only those phones get it. After sending it switches back to "Iedereen".
+- **"Eigen bericht…"** (custom message): the button at the bottom lets you type any message.
+- A message containing `…` (e.g. "We vertrekken naar …") asks you to fill in the rest when sending.
+- **No response?** After 30 seconds the phone rings like a call until someone presses **"OK, gezien"**.
+  - Phone on normal: ringtone and vibration.
+  - Phone on **vibrate or silent: vibration only**.
 - **"Gezien door …"** (seen by): you can see who has seen your message.
 - **"Stop het bellen bij iedereen"**: stops the ringing on every phone.
-- **Instellingen** (settings): edit, add or remove messages, change your name and the ring delay,
-  and use **"Test het bellen"** to test the ringing on your own phone.
-- A message containing `…` (e.g. "We vertrekken naar …") asks you to fill in the rest when sending.
+- **Geschiedenis** (history, clock icon): all messages you received ("Ontvangen") and sent ("Verstuurd"), with
+  whether they were seen, missed ("Gemist") or cancelled. Stored on the phone (last 200).
+- **Instellingen** (settings, gear icon):
+  - **"Wie heeft de app?"**: everyone in the family who has the app.
+  - **"Beltoon"**: ringtone. Default is your phone's own ringtone.
+  - **"Trilpatroon"**: vibration pattern, e.g. "Snel dubbel (brr brr)". Tap one to feel it.
+  - Edit, add, reorder or remove the message buttons, and change your name.
+  - **"Test het bellen"**: test the ringing on your own phone.
+
+## Who has the app (members)
+- A phone **joins automatically** when someone installs the app and enters their name. It then shows up for
+  everyone under "Wie heeft de app?" and in the "Aan:" row within seconds.
+- A phone is **removed automatically** when the app is uninstalled. An app can't do anything at the moment it's
+  deleted, but Google marks it as gone. The other phones check this every 6 hours (or when you tap the refresh
+  button on "Wie heeft de app?"), so the person usually disappears within a few hours. You can also remove
+  someone by hand with the bin icon; they reappear if they open the app again.
+- Brand-new phones sometimes need a minute before family messages reach them. If someone is missing,
+  open the app on their phone and tap refresh on "Wie heeft de app?".
 
 ## If notifications don't arrive
 - Set the app's **Battery** setting to **Unrestricted** / **Don't optimize**.
