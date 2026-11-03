@@ -4,7 +4,8 @@ import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.notiapp.alert.AlertService
-import com.notiapp.alert.SentAlerts
+import com.notiapp.alert.SeenNotifier
+import com.notiapp.data.History
 import com.notiapp.data.Settings
 import kotlinx.coroutines.runBlocking
 
@@ -28,8 +29,11 @@ class FamilyMessagingService : FirebaseMessagingService() {
                 AlertService.startAlert(applicationContext, message, Settings.RING_DELAY_SECONDS)
             }
             FamilyMessage.Type.ACK ->
-                if (message.originalSenderId == me.senderId) SentAlerts.onSeen(applicationContext, message)
+                if (message.originalSenderId == me.senderId) {
+                    History.markSeenBy(message.alertId, message.senderName)?.let { SeenNotifier.show(applicationContext, it) }
+                }
             FamilyMessage.Type.CANCEL -> AlertService.cancel(applicationContext, message.alertId)
+            else -> Unit
         }
     }
 

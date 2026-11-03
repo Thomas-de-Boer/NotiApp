@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.notiapp.R
+import com.notiapp.data.History
 import com.notiapp.data.Settings
 import com.notiapp.fcm.FamilyMessage
 import com.notiapp.fcm.FcmSender
@@ -54,8 +55,11 @@ class AlertService : Service() {
             }
             ACTION_ACK -> acknowledge(intent.getStringExtra(EXTRA_ALERT_ID))
             ACTION_CANCEL -> {
-                if (_active.value?.message?.alertId == intent.getStringExtra(EXTRA_ALERT_ID)) finish()
-                else if (_active.value == null) stop()
+                val alertId = intent.getStringExtra(EXTRA_ALERT_ID)
+                if (_active.value?.message?.alertId == alertId) {
+                    alertId?.let { History.setReceivedStatus(it, History.Status.GEANNULEERD) }
+                    finish()
+                } else if (_active.value == null) stop()
             }
             else -> if (_active.value == null) stop()
         }
@@ -65,6 +69,11 @@ class AlertService : Service() {
     private fun showAlert(message: FamilyMessage, delaySec: Int, isTest: Boolean) {
         timerJob?.cancel()
         ringer.stop()
+        // Een vorig bericht dat nog openstond is gemist.
+        _active.value?.let { History.setReceivedStatus(it.message.alertId, History.Status.GEMIST) }
+        if (!isTest) {
+            History.addReceived(message.alertId, message.senderName, message.to, message.text, message.sentAt)
+        }
         _active.value = ActiveAlert(message, ringing = false, isTest = isTest)
         startInForeground(buildNotification(message, ringing = false))
         notificationManager().cancel(Notifications.ID_RING) // eventueel vorig belbericht
@@ -74,6 +83,7 @@ class AlertService : Service() {
             escalate()
             delay(SAFETY_TIMEOUT_MS)
             Log.i(TAG, "Veiligheidslimiet bereikt, stoppen met bellen")
+            History.setReceivedStatus(message.alertId, History.Status.GEMIST)
             finish()
         }
     }
@@ -95,6 +105,7 @@ class AlertService : Service() {
             if (alert == null) stop()
             return
         }
+        History.setReceivedStatus(alert.message.alertId, History.Status.GEZIEN)
         finish(keepAlive = true)
         if (alert.isTest) {
             stop()

@@ -10,6 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,7 +32,7 @@ import com.notiapp.R
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import com.notiapp.alert.AlertService
-import com.notiapp.alert.SentAlerts
+import com.notiapp.data.History
 import com.notiapp.data.Settings
 import kotlinx.coroutines.launch
 
@@ -65,15 +66,19 @@ class MainActivity : ComponentActivity() {
                             onOpenPermissions = { screen = Screen.PERMISSIONS },
                             onBack = { screen = Screen.HOME },
                         )
+                        screen == Screen.HISTORY -> HistoryScreen(onBack = { screen = Screen.HOME })
                         else -> HomeScreen(
                             settings = s,
                             actions = {
+                                IconButton(onClick = { screen = Screen.HISTORY }) {
+                                    Icon(Icons.Filled.History, stringResource(R.string.history_title))
+                                }
                                 IconButton(onClick = { screen = Screen.SETTINGS }) {
                                     Icon(Icons.Filled.Settings, stringResource(R.string.settings_open))
                                 }
                             },
                             statusCard = { showMessage -> SentStatusCard(s, showMessage) },
-                            onSent = SentAlerts::onSent,
+                            onSent = { m -> History.addSent(m.alertId, m.senderName, m.to, m.text) },
                         )
                     }
                 }
@@ -105,7 +110,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private enum class Screen { HOME, SETTINGS, PERMISSIONS }
+private enum class Screen { HOME, SETTINGS, PERMISSIONS, HISTORY }
 
 @Composable
 fun NotiAppTheme(content: @Composable () -> Unit) {

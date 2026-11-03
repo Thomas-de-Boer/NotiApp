@@ -33,6 +33,19 @@
     <string name="home_cancel_alert">Stop het bellen bij iedereen</string>
     <string name="home_hide">Verbergen</string>
 
+    <!-- Geschiedenis -->
+    <string name="history_title">Geschiedenis</string>
+    <string name="history_received">Ontvangen</string>
+    <string name="history_sent">Verstuurd</string>
+    <string name="history_empty">Nog geen berichten</string>
+    <string name="history_from">Van %1$s</string>
+    <string name="history_to">Aan %1$s</string>
+    <string name="to_everyone">Iedereen</string>
+    <string name="status_new">Nieuw</string>
+    <string name="status_seen">✓ Gezien</string>
+    <string name="status_missed">Gemist</string>
+    <string name="status_cancelled">Geannuleerd door afzender</string>
+
     <!-- Instellingen -->
     <string name="settings_title">Instellingen</string>
     <string name="settings_open">Instellingen</string>
