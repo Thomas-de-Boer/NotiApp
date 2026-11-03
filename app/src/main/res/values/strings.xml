@@ -30,6 +30,24 @@
     <string name="home_cancel_alert">Stop het bellen bij iedereen</string>
     <string name="home_hide">Verbergen</string>
 
+    <!-- Instellingen -->
+    <string name="settings_title">Instellingen</string>
+    <string name="settings_open">Instellingen</string>
+    <string name="settings_back">Terug</string>
+    <string name="settings_delay">Bellen na %1$d seconden</string>
+    <string name="settings_delay_hint">Zo lang wacht deze telefoon na een bericht voordat hij gaat bellen. 0 = meteen bellen.</string>
+    <string name="settings_presets">Berichten</string>
+    <string name="settings_presets_hint">Gebruik … voor een stukje dat je bij het versturen invult, bijv. \"We vertrekken naar …\".</string>
+    <string name="settings_up">Omhoog</string>
+    <string name="settings_down">Omlaag</string>
+    <string name="settings_delete">Verwijderen</string>
+    <string name="settings_add">Bericht toevoegen</string>
+    <string name="settings_reset">Standaard herstellen</string>
+    <string name="settings_test">Test het bellen</string>
+    <string name="settings_test_hint">Toont een testmelding op deze telefoon en gaat na 5 seconden bellen. Er wordt niets naar het gezin gestuurd.</string>
+    <string name="settings_test_text">Dit is een test 🔔</string>
+    <string name="settings_permissions">Toestemmingen controleren</string>
+
     <!-- Meldingen -->
     <string name="channel_messages">Gezinsberichten</string>
     <string name="channel_messages_desc">Nieuwe berichten van het gezin</string>
