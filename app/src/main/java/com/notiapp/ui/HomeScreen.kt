@@ -18,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -123,6 +124,22 @@ fun HomeScreen(
                     )
                 }
             }
+            item(span = { GridItemSpan(2) }) {
+                OutlinedCard(
+                    onClick = { fillInPreset = CUSTOM_MESSAGE },
+                    enabled = !sending,
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp),
+                ) {
+                    Text(
+                        stringResource(R.string.home_custom),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth().padding(20.dp),
+                    )
+                }
+            }
         }
     }
 
@@ -135,21 +152,29 @@ fun HomeScreen(
     }
 }
 
-/** Voor berichten als "We vertrekken naar …": vul het laatste stukje in. */
+/** Markeert het "Eigen bericht"-venster (in plaats van een vast bericht met …). */
+private const val CUSTOM_MESSAGE = "\u0000eigen"
+
+/**
+ * Voor berichten als "We vertrekken naar …": vul het laatste stukje in.
+ * Voor [CUSTOM_MESSAGE]: typ zelf het hele bericht.
+ */
 @Composable
 private fun FillInDialog(preset: String, onDismiss: () -> Unit, onSend: (String) -> Unit) {
     var extra by rememberSaveable { mutableStateOf("") }
-    val prefix = preset.substringBefore(Settings.FILL_IN).trimEnd()
-    val suffix = preset.substringAfter(Settings.FILL_IN).trimStart()
+    val custom = preset == CUSTOM_MESSAGE
+    val prefix = if (custom) "" else preset.substringBefore(Settings.FILL_IN).trimEnd()
+    val suffix = if (custom) "" else preset.substringAfter(Settings.FILL_IN).trimStart()
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("$prefix …") },
+        title = { Text(if (custom) stringResource(R.string.home_custom_title) else "$prefix …") },
         text = {
             OutlinedTextField(
                 value = extra,
                 onValueChange = { extra = it },
-                label = { Text(stringResource(R.string.home_fill_in)) },
-                singleLine = true,
+                label = { Text(stringResource(if (custom) R.string.home_custom_label else R.string.home_fill_in)) },
+                singleLine = !custom,
+                maxLines = 4,
             )
         },
         confirmButton = {

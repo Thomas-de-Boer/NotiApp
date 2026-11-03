@@ -23,6 +23,9 @@
     <string name="home_sent">Verstuurd naar het gezin ✓</string>
     <string name="home_fill_in">Vul aan</string>
     <string name="home_send">Versturen</string>
+    <string name="home_custom">Eigen bericht… ✏️</string>
+    <string name="home_custom_title">Eigen bericht</string>
+    <string name="home_custom_label">Je bericht</string>
     <string name="cancel">Annuleren</string>
     <string name="home_last_sent">Laatst verstuurd: %1$s</string>
     <string name="home_seen_by">Gezien door: %1$s</string>
