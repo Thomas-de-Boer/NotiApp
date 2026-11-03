@@ -6,24 +6,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
-import com.notiapp.data.AppSettings
 import com.notiapp.data.Settings
 import kotlinx.coroutines.launch
 
@@ -43,7 +38,7 @@ class MainActivity : ComponentActivity() {
                         else -> if (s.name.isBlank()) {
                             SetupScreen(initialName = "") { name -> scope.launch { store.setName(name) } }
                         } else {
-                            HomePlaceholder(s)
+                            HomeScreen(s)
                         }
                     }
                 }
@@ -59,11 +54,6 @@ class MainActivity : ComponentActivity() {
         }
         FirebaseMessaging.getInstance().subscribeToTopic(Settings.TOPIC)
     }
-}
-
-@Composable
-private fun HomePlaceholder(s: AppSettings) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Hoi ${s.name}") }
 }
 
 @Composable

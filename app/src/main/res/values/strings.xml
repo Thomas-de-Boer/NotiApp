@@ -16,4 +16,12 @@
     <string name="perm_grant">Toestaan</string>
     <string name="setup_done">Klaar</string>
     <string name="setup_permissions_warning">Zonder alle toestemmingen kan het zijn dat je berichten mist of dat de telefoon niet belt.</string>
+
+    <!-- Hoofdscherm -->
+    <string name="home_greeting">Hoi %1$s 👋</string>
+    <string name="home_hint">Tik op een bericht om het naar het hele gezin te sturen.</string>
+    <string name="home_sent">Verstuurd naar het gezin ✓</string>
+    <string name="home_fill_in">Vul aan</string>
+    <string name="home_send">Versturen</string>
+    <string name="cancel">Annuleren</string>
 </resources>
